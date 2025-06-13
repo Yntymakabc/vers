@@ -123,3 +123,11 @@ h1 {
 .navbar-links a:hover {
     color: #e2e6ea;
 }
+.accept-btn-wrapper {
+    display: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    align-items: center;
+    z-index: 2;
+}
