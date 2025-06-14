@@ -15,6 +15,7 @@
             <p>Don't have an account? <a href="register.html">Register</a></p>
         </form>
     </div>
+    <script src="../js/globals.js"></script>
     <script>
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -27,15 +28,34 @@
                 body: JSON.stringify({username, password})
             });
             const data = await response.json();
+            console.log("Login response:", data);
+            
             if (data.message === "Login successful") {
+                // Store all user data in localStorage
                 localStorage.setItem('username', data.username);
                 localStorage.setItem('balance', data.balance);
-                localStorage.setItem('id', data.id); // Store id for globals.js
+                localStorage.setItem('id', data.id);
+                
+                // Store courses array
+                if (data.courses && Array.isArray(data.courses)) {
+                    localStorage.setItem('courses', JSON.stringify(data.courses));
+                    console.log("Courses saved to localStorage:", data.courses);
+                } else {
+                    localStorage.setItem('courses', JSON.stringify([]));
+                    console.log("No courses in response, saving empty array");
+                }
+                
+                // Update global user object
+                if (window.updateCurrentUser) {
+                    window.updateCurrentUser();
+                }
+                
                 window.location.href = "main.html";
             } else {
                 alert(data.message || "Login failed");
             }
         } catch (err) {
+            console.error("Login error:", err);
             alert("Network error or server unavailable.");
         }
     });

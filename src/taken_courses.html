@@ -23,12 +23,27 @@
         .course-card {
             position: relative;
             transition: box-shadow 0.2s;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            max-width: 600px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .course-card:hover {
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         .course-card:hover .cancel-btn {
             display: block;
+        }
+        .course-card h2 {
+            color: #4285F4;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        .course-card p {
+            font-size: 1.2rem;
+            margin: 8px 0;
         }
     </style>
 </head>
@@ -48,47 +63,104 @@
         </div>
     </nav>
     <div class="container">
-        <h1 id="courses-title">No courses taken yet</h1>
+        <h1 id="courses-title">My Courses</h1>
         <p id="main-link"><a href="main.html">Go to main page to find a tutor</a></p>
         <div id="taken-courses-list"></div>
     </div>
+    
+    <!-- Include globals.js first -->
+    <script src="../js/globals.js"></script>
+    
     <script>
-        // Display taken courses if any exist in localStorage
-        function renderCourses() {
-            const takenCourses = JSON.parse(localStorage.getItem('takenCourses') || '[]');
-            const listDiv = document.getElementById('taken-courses-list');
+        // Debug: Log current user data to check if courses array is loaded correctly
+        console.log("Current user data:", window.currentUser);
+        console.log("Courses from localStorage:", JSON.parse(localStorage.getItem('courses') || '[]'));
+        
+        // Function to fetch tutor data and create cards
+        async function displayTutorCards() {
+            // Get course IDs from the global user object
+            const courseIds = window.currentUser.courses;
+            console.log("Course IDs being used for display:", courseIds);
+            
+            // Container for the cards
+            const cardsContainer = document.getElementById('taken-courses-list');
+            
+            // Update title and link visibility
             const title = document.getElementById('courses-title');
             const mainLink = document.getElementById('main-link');
-            if (takenCourses.length > 0) {
-                title.textContent = "My Taken Courses";
-                mainLink.style.display = "none";
-                listDiv.innerHTML = takenCourses.map((course, idx) => `
-                    <div class="course-card" data-idx="${idx}">
-                        <button class="cancel-btn" title="Remove">&times;</button>
-                        <h2>${course.title}</h2>
-                        <p><strong>Tutor:</strong> ${course.name ? course.name : ""}${course.username ? " (" + course.username + ")" : ""}</p>
-                        <p><strong>ORT Points:</strong> ${course.ort}</p>
-                        <p><strong>Experience:</strong> ${course.experience}</p>
-                        <p><strong>Price:</strong> ${course.price}</p>
-                        <p><strong>Available Time:</strong> ${course.time}</p>
-                    </div>
-                `).join('');
-                // Add event listeners for cancel buttons
-                document.querySelectorAll('.cancel-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const idx = this.parentElement.getAttribute('data-idx');
-                        takenCourses.splice(idx, 1);
-                        localStorage.setItem('takenCourses', JSON.stringify(takenCourses));
-                        renderCourses();
-                    });
-                });
-            } else {
+            
+            if (courseIds.length === 0) {
                 title.textContent = "No courses taken yet";
-                mainLink.style.display = "";
-                listDiv.innerHTML = "";
+                mainLink.style.display = "block";
+                cardsContainer.innerHTML = '';
+                return;
             }
+            
+            title.textContent = "My Taken Courses";
+            mainLink.style.display = "none";
+            
+            // Show loading indicator
+            cardsContainer.innerHTML = '<p>Loading your courses...</p>';
+            
+            let cardsHTML = '';
+            
+            // Process each course ID
+            for (const courseId of courseIds) {
+                try {
+                    // Fetch tutor data
+                    const response = await fetch(`https://yntymak.pythonanywhere.com//tutor?id=${courseId}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const tutorData = await response.json();
+                    
+                    // Create card if data is valid
+                    if (tutorData && tutorData.id) {
+                        cardsHTML += `
+                            <div class="course-card" data-id="${tutorData.id}">
+                                <button class="cancel-btn" title="Remove course">&times;</button>
+                                <h2>${tutorData.subject || 'Subject'}</h2>
+                                <p><strong>Name:</strong> ${tutorData.name || 'N/A'}</p>
+                                <p><strong>ORT Points:</strong> ${tutorData.ort_points || 'N/A'}</p>
+                                <p><strong>Experience:</strong> ${tutorData.experience || 'N/A'}</p>
+                                <p><strong>Price:</strong> $${tutorData.price || 0}/hour</p>
+                                <p><strong>Available Time:</strong> ${tutorData.available_day || 'N/A'} ${tutorData.course_time_from || ''}-${tutorData.course_time_to || ''}</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching data for course ID ${courseId}:`, error);
+                    cardsHTML += `
+                        <div class="course-card error">
+                            <p>Error loading course #${courseId}</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            cardsContainer.innerHTML = cardsHTML;
+            
+            // Add event listeners for cancel buttons
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const id = parseInt(this.parentElement.getAttribute('data-id'));
+                    removeCourse(id);
+                });
+            });
         }
+
+        // Function to remove a course
+        function removeCourse(courseId) {
+            const courseIds = window.currentUser.courses.filter(id => id !== courseId);
+            
+            localStorage.setItem('courses', JSON.stringify(courseIds));
+            window.currentUser.courses = courseIds;
+            
+            displayTutorCards();
+        }
+
         // Show username and balance in navbar if logged in
         function updateNavbarUserInfo() {
             const username = localStorage.getItem('username');
@@ -96,15 +168,19 @@
             const userInfo = document.getElementById('user-info');
             const navbarLinks = document.getElementById('navbar-links');
             const logoutLi = document.getElementById('logout-li');
+            
             if (username) {
                 userInfo.textContent = `User: ${username} | Balance: $${parseFloat(balance || 0).toFixed(2)}`;
                 userInfo.style.display = '';
+                
+                // Hide register and login links when user is logged in
                 navbarLinks.querySelectorAll('li').forEach(li => {
                     const a = li.querySelector('a');
                     if (a && (a.getAttribute('href') === 'login.html' || a.getAttribute('href') === 'register.html')) {
                         li.style.display = 'none';
                     }
                 });
+                
                 logoutLi.style.display = '';
             } else {
                 userInfo.textContent = '';
@@ -113,17 +189,24 @@
                 logoutLi.style.display = 'none';
             }
         }
-        renderCourses();
-        updateNavbarUserInfo();
 
         // Logout functionality
         document.getElementById('logout-link').onclick = function(e) {
             e.preventDefault();
             localStorage.removeItem('username');
             localStorage.removeItem('balance');
-            updateNavbarUserInfo();
+            localStorage.removeItem('courses');
+            localStorage.removeItem('id');
             window.location.href = "login.html";
         };
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            window.updateCurrentUser(); // Ensure we have the latest user data
+            console.log("After updateCurrentUser:", window.currentUser);
+            updateNavbarUserInfo();
+            displayTutorCards();
+        });
     </script>
 </body>
 </html>
