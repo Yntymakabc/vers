@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ORT-tutoring</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        .service-card {
+            position: relative;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        .service-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .cancel-offer {
+            opacity: 0;
+            pointer-events: none;
+            display: inline-block;
+            background: #e74c3c;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 8px;
+            margin-top: 4px;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        .service-card:hover .cancel-offer {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .cancel-offer:hover {
+            background: #c0392b;
+        }
+        .be-tutor-link {
+            display: inline-block;
+            margin-bottom: 18px;
+            background: #27ae60;
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .be-tutor-link:hover {
+            background: #219150;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="main.html" class="navbar-logo">ORT-tutoring</a>
+            <ul class="navbar-links">
+                <li><a href="taken_courses.html">Taken Courses</a></li>
+                <li><a href="my_offers.html">My Offers</a></li>
+                <li><a href="be_the_tutor.html">Be the Tutor</a></li>
+                <li><a href="register.html">Sign Up</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+    <a href="be_the_tutor.html" class="be-tutor-link">Add a new offer</a>
+    <h1>Subjects I Offer</h1>
+    <div class="services-list" id="offers-list"></div>
+    </div>
+    <script>
+        // Render user offers from localStorage
+        function renderOffers() {
+            const offersList = document.getElementById('offers-list');
+            offersList.innerHTML = '';
+            let userOffers = JSON.parse(localStorage.getItem('userOffers') || '[]');
+            userOffers.forEach((offer, idx) => {
+                const card = document.createElement('div');
+                card.className = 'service-card';
+                card.setAttribute('data-title', offer.subject);
+                card.setAttribute('data-username', offer.username);
+                card.innerHTML = `
+                    <span class="cancel-offer">Cancel this offer</span>
+                    <h2>${offer.subject}</h2>
+                    <p><strong>Name:</strong> ${offer.name}</p>
+                    <p><strong>Username:</strong> ${offer.username}</p>
+                    <p><strong>ORT Points:</strong> ${offer.ort}</p>
+                    <p><strong>Year ORT Taken:</strong> ${offer.ortYear}</p>
+                    <p><strong>Experience:</strong> ${offer.experience}</p>
+                    <p><strong>Price:</strong> ${offer.price}</p>
+                    <p><strong>Available Time:</strong> ${offer.days} ${offer.startTime}-${offer.endTime}</p>
+                `;
+                // Remove offer on click (either on card or cancel-offer text)
+                card.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('cancel-offer') || e.currentTarget === e.target) {
+                        userOffers = userOffers.filter(o =>
+                            !(o.subject === offer.subject && o.username === offer.username)
+                        );
+                        localStorage.setItem('userOffers', JSON.stringify(userOffers));
+                        // Remove from main page as well
+                        if (window.opener) {
+                            window.opener.postMessage({type: 'removeOffer', subject: offer.subject, username: offer.username}, '*');
+                        }
+                        let takenCourses = JSON.parse(localStorage.getItem('takenCourses') || '[]');
+                        takenCourses = takenCourses.filter(c => !(c.title === offer.subject && c.username === offer.username));
+                        localStorage.setItem('takenCourses', JSON.stringify(takenCourses));
+                        renderOffers();
+                    }
+                });
+                offersList.appendChild(card);
+            });
+        }
+
+        // Listen for removeOffer messages in main.html
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'removeOffer') {
+                const {subject, username} = event.data;
+                const offersList = document.getElementById('offers-list');
+                if (offersList) {
+                    const card = offersList.querySelector(`[data-title="${subject}"][data-username="${username}"]`);
+                    if (card) card.remove();
+                }
+                let userOffers = JSON.parse(localStorage.getItem('userOffers') || '[]');
+                userOffers = userOffers.filter(o => !(o.subject === subject && o.username === username));
+                localStorage.setItem('userOffers', JSON.stringify(userOffers));
+            }
+        });
+
+        renderOffers();
+    </script>
+</body>
+</html>

@@ -2,16 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Service Offers</title>
+    <title>ORT-tutoring</title>
     <link rel="stylesheet" href="../css/main.css">
+    <style>
+        .accept-btn-wrapper {
+            display: none;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            align-items: center;
+            z-index: 2;
+        }
+        .service-card {
+            position: relative;
+            transition: box-shadow 0.2s;
+        }
+        .service-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .service-card:hover .accept-btn-wrapper {
+            display: flex;
+        }
+        .accept-text {
+            background: #27ae60;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .accept-text:hover {
+            background: #219150;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="#" class="navbar-logo">VibeFront</a>
+            <a href="main.html" class="navbar-logo">ORT-tutoring</a>
             <ul class="navbar-links">
                 <li><a href="taken_courses.html">Taken Courses</a></li>
-                <li><a href="#">My Offers</a></li>
+                <li><a href="my_offers.html">My Offers</a></li>
+                <li><a href="be_the_tutor.html">Be the Tutor</a></li>
                 <li><a href="register.html">Sign Up</a></li>
                 <li><a href="login.html">Login</a></li>
             </ul>
@@ -19,63 +55,125 @@
     </nav>
     <div class="container">
         <h1>Find a Tutor</h1>
-        <div class="services-list">
-            <div class="service-card">
-                <h2>Math Tutoring</h2>
-                <p><strong>Name:</strong> Aibek</p>
-                <p><strong>Username:</strong> aibek_math</p>
-                <p><strong>ORT Points:</strong> 190</p>
-                <p><strong>Experience:</strong> 3 years teaching high school math</p>
-                <p>Experienced math teacher for all levels.</p>
-                <p><strong>Price:</strong> $15/hour</p>
-                <p><strong>Available Time:</strong> Mon-Fri, 16:00-19:00</p>
-            </div>
-            <div class="service-card">
-                <h2>Russian Language Lessons</h2>
-                <p><strong>Name:</strong> Elena Petrova</p>
-                <p><strong>Username:</strong> elena_rus</p>
-                <p><strong>ORT Points:</strong> 185</p>
-                <p><strong>Experience:</strong> 5 years teaching Russian</p>
-                <p>Native speaker offering beginner to advanced lessons.</p>
-                <p><strong>Price:</strong> $12/hour</p>
-                <p><strong>Available Time:</strong> Sat-Sun, 10:00-14:00</p>
-            </div>
-            <div class="service-card">
-                <h2>English Tutoring</h2>
-                <p><strong>Name:</strong> Samat Uulu</p>
-                <p><strong>Username:</strong> samat_eng</p>
-                <p><strong>ORT Points:</strong> 178</p>
-                <p><strong>Experience:</strong> 2 years tutoring English</p>
-                <p>Improve your English speaking and writing skills.</p>
-                <p><strong>Price:</strong> $10/hour</p>
-                <p><strong>Available Time:</strong> Mon, Wed, Fri, 18:00-20:00</p>
-            </div>
-            <div class="service-card">
-                <h2>Physics Help</h2>
-                <p><strong>Name:</strong> Nurzat Akmatova</p>
-                <p><strong>Username:</strong> nurzat_phys</p>
-                <p><strong>ORT Points:</strong> 192</p>
-                <p><strong>Experience:</strong> 1 year helping with high school physics</p>
-                <p>University student helps with high school physics.</p>
-                <p><strong>Price:</strong> $13/hour</p>
-                <p><strong>Available Time:</strong> Tue, Thu, 15:00-17:00</p>
-            </div>
+        <form id="search-form" style="margin-bottom: 24px;">
+            <input type="text" id="search-input" placeholder="Search for a subject (e.g. Math, English, Physics)" style="padding: 8px; width: 250px;">
+            <button type="submit" style="padding: 8px 16px;">Search</button>
+        </form>
+        <div class="services-list" id="services-list">
+            <!-- User offers will be rendered here -->
         </div>
     </div>
+    <script>
+        // Load user offers from localStorage and display them
+        function renderUserOffers() {
+            const servicesList = document.getElementById('services-list');
+            let userOffers = JSON.parse(localStorage.getItem('userOffers') || '[]');
+            userOffers.forEach(offer => {
+                // Prevent duplicate display
+                if (!servicesList.querySelector(`[data-title="${offer.subject}"][data-username="${offer.username || ''}"]`)) {
+                    const card = document.createElement('div');
+                    card.className = 'service-card';
+                    card.setAttribute('data-title', offer.subject);
+                    card.setAttribute('data-name', offer.name);
+                    card.setAttribute('data-username', offer.username || '');
+                    card.setAttribute('data-ort', offer.ort);
+                    card.setAttribute('data-experience', offer.experience);
+                    card.setAttribute('data-price', offer.price);
+                    card.setAttribute('data-time', offer.days + ' ' + offer.startTime + '-' + offer.endTime);
+                    card.innerHTML = `
+                        <span class="accept-btn-wrapper">
+                            <span class="accept-text">Take this course?</span>
+                        </span>
+                        <h2>${offer.subject}</h2>
+                        <p><strong>Name:</strong> ${offer.name}</p>
+                        ${offer.username ? `<p><strong>Username:</strong> ${offer.username}</p>` : ""}
+                        <p><strong>ORT Points:</strong> ${offer.ort}</p>
+                        <p><strong>Year ORT Taken:</strong> ${offer.ortYear}</p>
+                        <p><strong>Experience:</strong> ${offer.experience}</p>
+                        <p><strong>Price:</strong> ${offer.price}</p>
+                        <p><strong>Available Time:</strong> ${offer.days} ${offer.startTime}-${offer.endTime}</p>
+                    `;
+                    servicesList.appendChild(card);
+                }
+            });
+        }
 
-    <div class="container be-tutor-section">
-        <h1>Be the Tutor</h1>
-        <form class="form be-tutor-form">
-            <input type="text" placeholder="Your Name" required>
-            <input type="text" placeholder="Username" required>
-            <input type="number" placeholder="ORT Points" required>
-            <input type="text" placeholder="Experience in Teaching" required>
-            <input type="text" placeholder="Subject (e.g. Math, Russian)" required>
-            <input type="text" placeholder="Short Description" required>
-            <input type="text" placeholder="Price per hour (e.g. $15/hour)" required>
-            <input type="text" placeholder="Available Time (e.g. Mon-Fri, 16:00-19:00)" required>
-            <button type="submit">Offer Your Service</button>
-        </form>
-    </div>
+        // Search functionality
+        document.getElementById('search-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const cards = document.querySelectorAll('.service-card');
+            cards.forEach(card => {
+                const subject = card.querySelector('h2')?.textContent.toLowerCase() || '';
+                if (subject.includes(query) || query === '') {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Accept text functionality for adding to taken_courses
+        function addAcceptListeners() {
+            document.querySelectorAll('.service-card').forEach(card => {
+                const acceptText = card.querySelector('.accept-text');
+                if (acceptText) {
+                    acceptText.onclick = function(e) {
+                        e.stopPropagation();
+                        const course = {
+                            title: card.getAttribute('data-title'),
+                            name: card.getAttribute('data-name'),
+                            username: card.getAttribute('data-username'),
+                            ort: card.getAttribute('data-ort'),
+                            experience: card.getAttribute('data-experience'),
+                            price: card.getAttribute('data-price'),
+                            time: card.getAttribute('data-time')
+                        };
+                        let takenCourses = JSON.parse(localStorage.getItem('takenCourses') || '[]');
+                        // Prevent duplicates
+                        if (!takenCourses.some(c => c.title === course.title && c.username === course.username)) {
+                            takenCourses.push(course);
+                            localStorage.setItem('takenCourses', JSON.stringify(takenCourses));
+                            alert('Course added to your taken courses!');
+                        } else {
+                            alert('You have already added this course.');
+                        }
+                    };
+                }
+            });
+        }
+
+        // Initial rendering
+        renderUserOffers();
+        addAcceptListeners();
+
+        // If user adds an offer on be_the_tutor.html, save it to localStorage as 'userOffers'
+        // Example code for be_the_tutor.html (for reference):
+        // let userOffers = JSON.parse(localStorage.getItem('userOffers') || '[]');
+        // userOffers.push({name, username, ort, ortYear, experience, subject, price, days, startTime, endTime});
+        // localStorage.setItem('userOffers', JSON.stringify(userOffers));
+
+        // Add this to your be_the_tutor.html <script>
+        document.getElementById('offer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('offer-name').value;
+            const username = document.getElementById('offer-username').value;
+            const ort = document.getElementById('offer-ort').value;
+            const ortYear = document.getElementById('offer-ort-year').value;
+            const experience = document.getElementById('offer-experience').value;
+            const subject = document.getElementById('offer-subject').value;
+            const price = document.getElementById('offer-price').value;
+            const daysSelect = document.getElementById('offer-days');
+            const days = Array.from(daysSelect.selectedOptions).map(opt => opt.value).join(', ');
+            const startTime = document.getElementById('offer-start-time').value;
+            const endTime = document.getElementById('offer-end-time').value;
+
+            let userOffers = JSON.parse(localStorage.getItem('userOffers') || '[]');
+            userOffers.push({name, username, ort, ortYear, experience, subject, price, days, startTime, endTime});
+            localStorage.setItem('userOffers', JSON.stringify(userOffers));
+            alert('Your offer has been added! It will now appear on the main page.');
+            document.getElementById('offer-form').reset();
+        });
+    </script>
 </body>
 </html>

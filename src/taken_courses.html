@@ -2,47 +2,92 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Taken Courses</title>
+    <title>ORT-tutoring</title>
     <link rel="stylesheet" href="../css/taken_courses.css">
+    <style>
+        .cancel-btn {
+            display: none;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 2;
+        }
+        .course-card {
+            position: relative;
+            transition: box-shadow 0.2s;
+        }
+        .course-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .course-card:hover .cancel-btn {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="main.html" class="navbar-logo">VibeFront</a>
+            <a href="main.html" class="navbar-logo">ORT-tutoring</a>
             <ul class="navbar-links">
                 <li><a href="taken_courses.html">Taken Courses</a></li>
-                <li><a href="#">My Offers</a></li>
+                <li><a href="my_offers.html">My Offers</a></li>
+                <li><a href="be_the_tutor.html">Be the Tutor</a></li>
                 <li><a href="register.html">Sign Up</a></li>
                 <li><a href="login.html">Login</a></li>
             </ul>
         </div>
     </nav>
     <div class="container">
-        <h1>My Taken Courses</h1>
-        <div class="courses-list">
-            <div class="course-card">
-                <h2>Math Tutoring</h2>
-                <p><strong>Tutor:</strong> Aibek (aibek_math)</p>
-                <p><strong>Status:</strong> Completed</p>
-                <p><strong>Sessions:</strong> 10</p>
-                <p><strong>Feedback:</strong> Very helpful and clear explanations!</p>
-            </div>
-            <div class="course-card">
-                <h2>Russian Language Lessons</h2>
-                <p><strong>Tutor:</strong> Elena Petrova (elena_rus)</p>
-                <p><strong>Status:</strong> Ongoing</p>
-                <p><strong>Sessions:</strong> 5</p>
-                <p><strong>Feedback:</strong> Great for beginners!</p>
-            </div>
-            <div class="course-card">
-                <h2>English Tutoring</h2>
-                <p><strong>Tutor:</strong> Samat Uulu (samat_eng)</p>
-                <p><strong>Status:</strong> Completed</p>
-                <p><strong>Sessions:</strong> 8</p>
-                <p><strong>Feedback:</strong> Improved my writing skills a lot.</p>
-            </div>
-        </div>
+        <h1 id="courses-title">No courses taken yet</h1>
+        <p id="main-link"><a href="main.html">Go to main page to find a tutor</a></p>
+        <div id="taken-courses-list"></div>
     </div>
-    <script src="../js/taken_courses.js"></script>
+    <script>
+        // Display taken courses if any exist in localStorage
+        function renderCourses() {
+            const takenCourses = JSON.parse(localStorage.getItem('takenCourses') || '[]');
+            const listDiv = document.getElementById('taken-courses-list');
+            const title = document.getElementById('courses-title');
+            const mainLink = document.getElementById('main-link');
+            if (takenCourses.length > 0) {
+                title.textContent = "My Taken Courses";
+                mainLink.style.display = "none";
+                listDiv.innerHTML = takenCourses.map((course, idx) => `
+                    <div class="course-card" data-idx="${idx}">
+                        <button class="cancel-btn" title="Remove">&times;</button>
+                        <h2>${course.title}</h2>
+                        <p><strong>Tutor:</strong> ${course.name ? course.name : ""}${course.username ? " (" + course.username + ")" : ""}</p>
+                        <p><strong>ORT Points:</strong> ${course.ort}</p>
+                        <p><strong>Experience:</strong> ${course.experience}</p>
+                        <p><strong>Price:</strong> ${course.price}</p>
+                        <p><strong>Available Time:</strong> ${course.time}</p>
+                    </div>
+                `).join('');
+                // Add event listeners for cancel buttons
+                document.querySelectorAll('.cancel-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const idx = this.parentElement.getAttribute('data-idx');
+                        takenCourses.splice(idx, 1);
+                        localStorage.setItem('takenCourses', JSON.stringify(takenCourses));
+                        renderCourses();
+                    });
+                });
+            } else {
+                title.textContent = "No courses taken yet";
+                mainLink.style.display = "";
+                listDiv.innerHTML = "";
+            }
+        }
+        renderCourses();
+    </script>
 </body>
 </html>

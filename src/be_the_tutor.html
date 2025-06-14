@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Want to be a Tutor? | ORT-tutoring</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/be_the_tutor.css">
+    <style>
+        .days-select-group, .subjects-select-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .day-checkbox-label, .subject-checkbox-label {
+            display: flex;
+            align-items: center;
+            background: #f2f2f2;
+            border-radius: 16px;
+            padding: 6px 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+            border: 1px solid #ccc;
+        }
+        .day-checkbox-label.selected, .subject-checkbox-label.selected {
+            background: #27ae60;
+            color: #fff;
+            border: 1px solid #219150;
+        }
+        .day-checkbox, .subject-checkbox {
+            display: none;
+        }
+        .price-select-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .price-radio-label {
+            display: flex;
+            align-items: center;
+            background: #f2f2f2;
+            border-radius: 16px;
+            padding: 6px 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+            border: 1px solid #ccc;
+        }
+        .price-radio-label.selected {
+            background: #27ae60;
+            color: #fff;
+            border: 1px solid #219150;
+        }
+        .price-radio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="main.html" class="navbar-logo">ORT-tutoring</a>
+            <ul class="navbar-links">
+                <li><a href="taken_courses.html">Taken Courses</a></li>
+                <li><a href="my_offers.html">My Offers</a></li>
+                <li><a href="be_the_tutor.html">Want to be a Tutor?</a></li>
+                <li><a href="register.html">Sign Up</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container be-tutor-section">
+        <h1>Want to be a tutor?</h1>
+        <form class="form be-tutor-form" id="offer-form">
+            <input type="text" id="offer-name" placeholder="Your Name" required>
+            <input type="number" id="offer-ort" placeholder="ORT Points" required>
+            <input type="number" id="offer-ort-year" placeholder="Year you took the ORT test" min="2000" max="2099" required>
+            <input type="text" id="offer-experience" placeholder="Experience in Teaching" required>
+            <label>Subjects:</label>
+            <div class="subjects-select-group" id="subjects-select-group">
+                <label class="subject-checkbox-label">
+                    <input type="checkbox" class="subject-checkbox" value="Math"> Math
+                </label>
+                <label class="subject-checkbox-label">
+                    <input type="checkbox" class="subject-checkbox" value="Russian Language"> Russian Language
+                </label>
+                <label class="subject-checkbox-label">
+                    <input type="checkbox" class="subject-checkbox" value="Chemistry"> Chemistry
+                </label>
+                <label class="subject-checkbox-label">
+                    <input type="checkbox" class="subject-checkbox" value="Biology"> Biology
+                </label>
+                <label class="subject-checkbox-label">
+                    <input type="checkbox" class="subject-checkbox" value="Physics"> Physics
+                </label>
+                <label class="subject-checkbox-label">
+                    <input type="checkbox" class="subject-checkbox" value="History"> History
+                </label>
+                <label class="subject-checkbox-label">
+                    <input type="checkbox" class="subject-checkbox" value="English Language"> English Language
+                </label>
+                <label class="subject-checkbox-label">
+                    <input type="checkbox" class="subject-checkbox" value="Advanced Math"> Advanced Math
+                </label>
+                <label class="subject-checkbox-label">
+                    <input type="checkbox" class="subject-checkbox" value="Kyrgyz Language"> Kyrgyz Language
+                </label>
+            </div>
+            <label>Available Days:</label>
+            <div class="days-select-group" id="days-select-group">
+                <label class="day-checkbox-label">
+                    <input type="checkbox" class="day-checkbox" value="Monday"> Monday
+                </label>
+                <label class="day-checkbox-label">
+                    <input type="checkbox" class="day-checkbox" value="Tuesday"> Tuesday
+                </label>
+                <label class="day-checkbox-label">
+                    <input type="checkbox" class="day-checkbox" value="Wednesday"> Wednesday
+                </label>
+                <label class="day-checkbox-label">
+                    <input type="checkbox" class="day-checkbox" value="Thursday"> Thursday
+                </label>
+                <label class="day-checkbox-label">
+                    <input type="checkbox" class="day-checkbox" value="Friday"> Friday
+                </label>
+                <label class="day-checkbox-label">
+                    <input type="checkbox" class="day-checkbox" value="Saturday"> Saturday
+                </label>
+                <label class="day-checkbox-label">
+                    <input type="checkbox" class="day-checkbox" value="Sunday"> Sunday
+                </label>
+            </div>
+            <label>Price per hour:</label>
+            <div class="price-select-group" id="price-select-group">
+                <label class="price-radio-label">
+                    <input type="radio" class="price-radio" name="offer-price" value="$5/hour" required> $5/hour
+                </label>
+                <label class="price-radio-label">
+                    <input type="radio" class="price-radio" name="offer-price" value="$6/hour"> $6/hour
+                </label>
+                <label class="price-radio-label">
+                    <input type="radio" class="price-radio" name="offer-price" value="$7/hour"> $7/hour
+                </label>
+                <label class="price-radio-label">
+                    <input type="radio" class="price-radio" name="offer-price" value="$8/hour"> $8/hour
+                </label>
+                <label class="price-radio-label">
+                    <input type="radio" class="price-radio" name="offer-price" value="$9/hour"> $9/hour
+                </label>
+                <label class="price-radio-label">
+                    <input type="radio" class="price-radio" name="offer-price" value="$10/hour"> $10/hour
+                </label>
+            </div>
+            <label for="offer-start-time">Course Starting Time:</label>
+            <input type="time" id="offer-start-time" required>
+            <label for="offer-end-time">Course Ending Time:</label>
+            <input type="time" id="offer-end-time" required>
+            <button type="submit">Offer Your Service</button>
+        </form>
+    </div>
+    <script>
+        // Days selection visual
+        document.querySelectorAll('.day-checkbox').forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (cb.checked) {
+                    cb.parentElement.classList.add('selected');
+                } else {
+                    cb.parentElement.classList.remove('selected');
+                }
+            });
+        });
+        // Price selection visual
+        document.querySelectorAll('.price-radio').forEach(rb => {
+            rb.addEventListener('change', function() {
+                document.querySelectorAll('.price-radio-label').forEach(label => label.classList.remove('selected'));
+                if (rb.checked) {
+                    rb.parentElement.classList.add('selected');
+                }
+            });
+        });
+        // Subjects selection visual
+        document.querySelectorAll('.subject-checkbox').forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (cb.checked) {
+                    cb.parentElement.classList.add('selected');
+                } else {
+                    cb.parentElement.classList.remove('selected');
+                }
+            });
+        });
+
+        document.getElementById('offer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('offer-name').value;
+            const ort = document.getElementById('offer-ort').value;
+            const ortYear = document.getElementById('offer-ort-year').value;
+            const experience = document.getElementById('offer-experience').value;
+            // Get all selected subjects
+            const subjects = Array.from(document.querySelectorAll('.subject-checkbox:checked')).map(cb => cb.value);
+            const days = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value).join(', ');
+            const price = document.querySelector('.price-radio:checked') ? document.querySelector('.price-radio:checked').value : '';
+            const startTime = document.getElementById('offer-start-time').value;
+            const endTime = document.getElementById('offer-end-time').value;
+
+            if (!subjects.length) {
+                alert('Please select at least one subject.');
+                return;
+            }
+            if (!days) {
+                alert('Please select at least one available day.');
+                return;
+            }
+            if (!price) {
+                alert('Please select a price.');
+                return;
+            }
+
+            let userOffers = JSON.parse(localStorage.getItem('userOffers') || '[]');
+            // Add an offer for each selected subject
+            subjects.forEach(subject => {
+                userOffers.push({name, ort, ortYear, experience, subject, price, days, startTime, endTime});
+            });
+            localStorage.setItem('userOffers', JSON.stringify(userOffers));
+            alert('Your offer(s) have been added! They will now appear on the main page.');
+            document.getElementById('offer-form').reset();
+            // Remove selected style after reset
+            document.querySelectorAll('.day-checkbox-label').forEach(label => label.classList.remove('selected'));
+            document.querySelectorAll('.price-radio-label').forEach(label => label.classList.remove('selected'));
+            document.querySelectorAll('.subject-checkbox-label').forEach(label => label.classList.remove('selected'));
+            window.location.href = "my_offers.html";
+        });
+    </script>
+</body>
+</html>
