@@ -38,6 +38,26 @@
         .accept-text:hover {
             background: #219150;
         }
+        
+        .buy-course-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: block;
+            width: 100%;
+        }
+        
+        .buy-course-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -67,14 +87,44 @@
     </div>
     <!-- Modal for Top Up Balance -->
     <div id="balance-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:1000;align-items:center;justify-content:center;">
-        <div style="background:#fff;max-width:340px;width:90vw;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:2rem;position:relative;">
-            <button id="close-balance-modal" style="position:absolute;top:10px;right:16px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#888;">&times;</button>
-            <div style="text-align:center;font-size:1.5rem;font-weight:bold;margin-bottom:1.2rem;color:#007bff;">Top Up Balance</div>
+        <div style="background:#fff;max-width:380px;width:90vw;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:1.5rem;position:relative;">
+            <button id="close-balance-modal" style="position:absolute;top:15px;right:18px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#888;">&times;</button>
+            <div style="text-align:center;font-size:1.8rem;font-weight:bold;margin-bottom:1.5rem;color:#007bff;">Top Up Balance</div>
+            
             <form id="balance-topup-form" autocomplete="off">
-                <label for="topup-sum" style="font-weight:bold;display:block;margin-bottom:0.5rem;">Amount (KGS):</label>
-                <input type="number" id="topup-sum" min="1" step="1" placeholder="Enter amount" required style="width:100%;padding:0.7rem;margin-bottom:1.2rem;border:1px solid #ccc;border-radius:6px;font-size:1rem;">
-                <button type="submit" style="width:100%;padding:0.9rem;background:#007bff;color:#fff;border:none;border-radius:6px;font-size:1.1rem;font-weight:bold;cursor:pointer;margin-bottom:1rem;transition:background 0.2s;">Top Up</button>
-                <div id="balance-modal-message" style="min-height:1.5em;text-align:center;font-size:1rem;margin-bottom:1rem;"></div>
+                <div style="margin-bottom:1.2rem;">
+                    <label for="topup-sum" style="font-weight:500;font-size:1.1rem;display:block;margin-bottom:0.5rem;color:#333;">Amount (KGS):</label>
+                    <div style="position:relative;">
+                        <input type="number" id="topup-sum" min="1" step="1" placeholder="Enter amount" required style="width:100%;box-sizing:border-box;padding:0.8rem 1rem;border:1px solid #ccc;border-radius:12px;font-size:1rem;">
+                    </div>
+                </div>
+                
+                <div style="background:#f8fafc;border-radius:15px;padding:1rem;margin-bottom:1.2rem;border:1px solid #eee;">
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:1.1rem;display:block;margin-bottom:0.5rem;color:#333;">Card Number:</label>
+                        <div style="position:relative;">
+                            <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" style="width:100%;box-sizing:border-box;padding:0.8rem 1rem;border:1px solid #ccc;border-radius:12px;font-size:1rem;">
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex;gap:0.8rem;margin-bottom:0;">
+                        <div style="flex:1;">
+                            <label style="font-weight:500;font-size:1.1rem;display:block;margin-bottom:0.5rem;color:#333;">Expiry:</label>
+                            <input type="text" placeholder="MM/YY" style="width:100%;box-sizing:border-box;padding:0.8rem 1rem;border:1px solid #ccc;border-radius:12px;font-size:1rem;">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-weight:500;font-size:1.1rem;display:block;margin-bottom:0.5rem;color:#333;">CVV:</label>
+                            <input type="text" placeholder="123" style="width:100%;box-sizing:border-box;padding:0.8rem 1rem;border:1px solid #ccc;border-radius:12px;font-size:1rem;">
+                        </div>
+                    </div>
+                    
+                    <div style="text-align:right;margin-top:0.8rem;">
+                        <span style="color:#6b7280;font-size:0.9rem;">Secured payment</span>
+                    </div>
+                </div>
+                
+                <button type="submit" style="width:100%;padding:0.9rem;background:#007bff;color:#fff;border:none;border-radius:12px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.2s ease;">Pay Now</button>
+                <div id="balance-modal-message" style="min-height:1.5em;text-align:center;font-size:1rem;margin-top:0.8rem;"></div>
             </form>
         </div>
     </div>
@@ -176,6 +226,52 @@
             });
         }
 
+        // Function to handle course purchase
+        async function purchaseCourse(tutorId) {
+            // Check if user is logged in
+            if (!window.currentUser || !window.currentUser.id) {
+                alert("Please log in to purchase a course");
+                return;
+            }
+            
+            const userId = window.currentUser.id;
+            
+            try {
+                const response = await fetch("https://yntymak.pythonanywhere.com/buy-course", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        user_id: Number(userId),
+                        tutor_id: Number(tutorId)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert("Course purchased successfully!");
+                    
+                    // Add the course to the user's courses list
+                    if (!window.currentUser.courses.includes(tutorId)) {
+                        window.currentUser.courses.push(tutorId);
+                        localStorage.setItem('courses', JSON.stringify(window.currentUser.courses));
+                    }
+                    
+                    // Update user balance if returned in response
+                    if (data.balance !== undefined) {
+                        window.currentUser.balance = data.balance;
+                        localStorage.setItem('balance', data.balance);
+                        updateNavbarUserInfo();
+                    }
+                } else {
+                    alert(data.message || "Failed to purchase course. Please try again.");
+                }
+            } catch (err) {
+                console.error("Error purchasing course:", err);
+                alert("Error purchasing course. Please try again.");
+            }
+        }
+
         // Load user offers from localStorage and display them
         function renderUserOffers() {
             const servicesList = document.getElementById('services-list');
@@ -193,6 +289,7 @@
                     card.setAttribute('data-price', offer.price);
                     card.setAttribute('data-time', offer.days + ' ' + offer.startTime + '-' + offer.endTime);
                     if (offer.id !== undefined) card.setAttribute('data-id', offer.id);
+                    
                     card.innerHTML = `
                         <span class="accept-btn-wrapper">
                             <span class="accept-text">Take this course?</span>
@@ -205,8 +302,20 @@
                         <p><strong>Experience:</strong> ${offer.experience}</p>
                         <p><strong>Price:</strong> ${offer.price}</p>
                         <p><strong>Available Time:</strong> ${offer.days} ${offer.startTime}-${offer.endTime}</p>
+                        <button class="buy-course-btn">Buy Course</button>
                     `;
                     servicesList.appendChild(card);
+                    
+                    // Add purchase button click handler
+                    const buyBtn = card.querySelector('.buy-course-btn');
+                    buyBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (offer.id) {
+                            purchaseCourse(offer.id);
+                        } else {
+                            alert("Cannot purchase this course at this time.");
+                        }
+                    });
                 }
             });
             addCardClickListeners();
@@ -227,6 +336,7 @@
                     card.setAttribute('data-name', tutor.name);
                     card.setAttribute('data-api', 'true');
                     if (tutor.id !== undefined) card.setAttribute('data-id', tutor.id);
+                    
                     card.innerHTML = `
                         <h2>${tutor.subject}</h2>
                         <p><strong>Name:</strong> ${tutor.name}</p>
@@ -234,8 +344,18 @@
                         <p><strong>Experience:</strong> ${tutor.experience}</p>
                         <p><strong>Price:</strong> $${tutor.price}/hour</p>
                         <p><strong>Available Time:</strong> ${tutor.available_day} ${tutor.course_time_from}-${tutor.course_time_to}</p>
+                        <button class="buy-course-btn">Buy Course</button>
                     `;
                     servicesList.appendChild(card);
+                    
+                    // Add purchase button click handler
+                    const buyBtn = card.querySelector('.buy-course-btn');
+                    buyBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (tutor.id) {
+                            purchaseCourse(tutor.id);
+                        }
+                    });
                 });
                 addCardClickListeners();
             } catch (err) {
@@ -302,7 +422,7 @@
             document.getElementById('balance-topup-form').reset();
         }
 
-        // Top up form logic
+        // Top up form logic - keeping the same functionality, just updating the visual processing state
         document.getElementById('balance-topup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const sum = parseFloat(document.getElementById('topup-sum').value);
@@ -322,23 +442,39 @@
                 return;
             }
 
+            // Show processing state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Processing...";
+            submitBtn.style.opacity = "0.7";
+
             try {
+                // Simulate processing delay
+                await new Promise(resolve => setTimeout(resolve, 1200));
+                
+                // Original API call - unchanged
                 await fetch("https://yntymak.pythonanywhere.com/add-balance", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ id: Number(userId), sum: sum })
                 });
+                
                 // Update local balance for UI
                 let balance = parseFloat(localStorage.getItem('balance') || "0");
                 balance += sum;
                 localStorage.setItem('balance', balance);
                 if (window.currentUser) window.currentUser.balance = balance;
-                messageArea.textContent = "Top up successful!";
+                messageArea.textContent = "Payment successful!";
                 messageArea.style.color = "#27ae60";
                 updateNavbarUserInfo();
-                setTimeout(hideBalanceModal, 1200);
+                setTimeout(hideBalanceModal, 1500);
             } catch (err) {
-                messageArea.textContent = "Failed to top up balance. Please try again.";
+                messageArea.textContent = "Payment failed. Please try again.";
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+                submitBtn.style.opacity = "1";
             }
         });
 

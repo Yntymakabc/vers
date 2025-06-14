@@ -8,47 +8,101 @@
         .service-card {
             position: relative;
             cursor: pointer;
-            transition: box-shadow 0.2s;
+            transition: all 0.3s ease;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            padding: 1.8rem;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
         }
         .service-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.03), 0 4px 6px -2px rgba(0,0,0,0.01);
+            border-color: #cbd5e1;
         }
         .cancel-offer {
             opacity: 0;
             pointer-events: none;
             display: inline-block;
-            background: #e74c3c;
+            background: #f43f5e;
             color: #fff;
             font-size: 14px;
-            font-weight: bold;
-            padding: 4px 12px;
-            border-radius: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
             border: none;
             cursor: pointer;
-            margin-bottom: 8px;
-            margin-top: 4px;
-            transition: opacity 0.2s, background 0.2s;
+            margin-bottom: 10px;
+            margin-top: 5px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .service-card:hover .cancel-offer {
             opacity: 1;
             pointer-events: auto;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .cancel-offer:hover {
-            background: #c0392b;
+            background: #e11d48;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 7px rgba(0,0,0,0.15);
         }
         .be-tutor-link {
             display: inline-block;
-            margin-bottom: 18px;
-            background: #27ae60;
+            margin-bottom: 24px;
+            background: #4ade80;
             color: #fff;
-            padding: 6px 18px;
+            padding: 0.8rem 1.5rem;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: bold;
-            transition: background 0.2s;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(74, 222, 128, 0.15);
         }
         .be-tutor-link:hover {
-            background: #219150;
+            background: #38c172;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 222, 128, 0.2);
+        }
+        .service-card h2 {
+            color: #4361ee;
+            font-size: 1.5rem;
+            margin-bottom: 0.7rem;
+            font-weight: 600;
+        }
+        .service-card p {
+            margin: 0.5rem 0;
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .service-card p strong {
+            color: #334155;
+            font-weight: 600;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 2.2rem;
+            position: relative;
+        }
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: #4361ee;
+            border-radius: 3px;
         }
     </style>
 </head>

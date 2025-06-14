@@ -5,45 +5,77 @@
     <title>ORT-tutoring</title>
     <link rel="stylesheet" href="../css/taken_courses.css">
     <style>
-        .cancel-btn {
-            display: none;
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 18px;
-            cursor: pointer;
-            z-index: 2;
-        }
         .course-card {
             position: relative;
-            transition: box-shadow 0.2s;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 15px 0;
-            max-width: 600px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+            height: 100%;
         }
         .course-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        .course-card:hover .cancel-btn {
-            display: block;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.03), 0 4px 6px -2px rgba(0,0,0,0.01);
         }
         .course-card h2 {
-            color: #4285F4;
-            font-size: 2rem;
-            margin-bottom: 15px;
+            color: #4361ee;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            font-weight: 600;
         }
         .course-card p {
-            font-size: 1.2rem;
-            margin: 8px 0;
+            font-size: 0.95rem;
+            margin: 6px 0;
+            color: #64748b;
+            line-height: 1.4;
+        }
+        .course-card p strong {
+            color: #334155;
+            font-weight: 600;
+        }
+        #main-link {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        #main-link a {
+            color: #4361ee;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        #main-link a:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            text-decoration: underline;
+        }
+        #courses-title {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 2.2rem;
+            position: relative;
+        }
+        #courses-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: #4361ee;
+            border-radius: 3px;
+        }
+        /* Grid layout similar to main.html */
+        #taken-courses-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
     </style>
 </head>
@@ -116,11 +148,10 @@
                     
                     const tutorData = await response.json();
                     
-                    // Create card if data is valid
+                    // Create card if data is valid - removed cancel button
                     if (tutorData && tutorData.id) {
                         cardsHTML += `
                             <div class="course-card" data-id="${tutorData.id}">
-                                <button class="cancel-btn" title="Remove course">&times;</button>
                                 <h2>${tutorData.subject || 'Subject'}</h2>
                                 <p><strong>Name:</strong> ${tutorData.name || 'N/A'}</p>
                                 <p><strong>ORT Points:</strong> ${tutorData.ort_points || 'N/A'}</p>
@@ -142,23 +173,7 @@
             
             cardsContainer.innerHTML = cardsHTML;
             
-            // Add event listeners for cancel buttons
-            document.querySelectorAll('.cancel-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    const id = parseInt(this.parentElement.getAttribute('data-id'));
-                    removeCourse(id);
-                });
-            });
-        }
-
-        // Function to remove a course
-        function removeCourse(courseId) {
-            const courseIds = window.currentUser.courses.filter(id => id !== courseId);
-            
-            localStorage.setItem('courses', JSON.stringify(courseIds));
-            window.currentUser.courses = courseIds;
-            
-            displayTutorCards();
+            // Removed event listeners for cancel buttons
         }
 
         // Show username and balance in navbar if logged in
