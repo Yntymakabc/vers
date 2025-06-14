@@ -139,6 +139,43 @@
             window.location.href = "login.html";
         };
 
+        // Print card info on click for user offers and API tutors
+        function addCardClickListeners() {
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Ignore clicks on accept button
+                    if (e.target.classList.contains('accept-text')) return;
+
+                    // User offers
+                    if (card.hasAttribute('data-title')) {
+                        const info = {
+                            subject: card.getAttribute('data-title'),
+                            name: card.getAttribute('data-name'),
+                            username: card.getAttribute('data-username'),
+                            ort: card.getAttribute('data-ort'),
+                            experience: card.getAttribute('data-experience'),
+                            price: card.getAttribute('data-price'),
+                            time: card.getAttribute('data-time')
+                        };
+                        if (card.hasAttribute('data-id')) info.id = card.getAttribute('data-id');
+                        console.log(info);
+                    }
+                    // API tutors
+                    if (card.hasAttribute('data-api')) {
+                        const info = {};
+                        card.querySelectorAll('p').forEach(p => {
+                            const label = p.querySelector('strong') ? p.querySelector('strong').textContent.replace(':','').trim() : '';
+                            const value = p.textContent.replace(label + ':', '').trim();
+                            if (label && value) info[label] = value;
+                        });
+                        info['subject'] = card.querySelector('h2') ? card.querySelector('h2').textContent : '';
+                        if (card.hasAttribute('data-id')) info.id = card.getAttribute('data-id');
+                        console.log(info);
+                    }
+                });
+            });
+        }
+
         // Load user offers from localStorage and display them
         function renderUserOffers() {
             const servicesList = document.getElementById('services-list');
@@ -155,6 +192,7 @@
                     card.setAttribute('data-experience', offer.experience);
                     card.setAttribute('data-price', offer.price);
                     card.setAttribute('data-time', offer.days + ' ' + offer.startTime + '-' + offer.endTime);
+                    if (offer.id !== undefined) card.setAttribute('data-id', offer.id);
                     card.innerHTML = `
                         <span class="accept-btn-wrapper">
                             <span class="accept-text">Take this course?</span>
@@ -171,6 +209,7 @@
                     servicesList.appendChild(card);
                 }
             });
+            addCardClickListeners();
         }
 
         // Render tutors from API (dynamic, always clears and re-renders)
@@ -187,6 +226,7 @@
                     card.setAttribute('data-title', tutor.subject);
                     card.setAttribute('data-name', tutor.name);
                     card.setAttribute('data-api', 'true');
+                    if (tutor.id !== undefined) card.setAttribute('data-id', tutor.id);
                     card.innerHTML = `
                         <h2>${tutor.subject}</h2>
                         <p><strong>Name:</strong> ${tutor.name}</p>
@@ -197,6 +237,7 @@
                     `;
                     servicesList.appendChild(card);
                 });
+                addCardClickListeners();
             } catch (err) {
                 // Optionally show error
             }
@@ -305,6 +346,7 @@
         renderApiTutors();
         renderUserOffers();
         addAcceptListeners();
+        // addCardClickListeners(); // now called inside renderApiTutors and renderUserOffers
 
         // Optionally, re-render API tutors on demand (e.g. after adding a new tutor)
         // You can call renderApiTutors() again if needed.
