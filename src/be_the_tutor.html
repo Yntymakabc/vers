@@ -61,173 +61,121 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="main.html" class="navbar-logo">ORT-tutoring</a>
-            <ul class="navbar-links">
+            <ul class="navbar-links" id="navbar-links">
                 <li><a href="taken_courses.html">Taken Courses</a></li>
                 <li><a href="my_offers.html">My Offers</a></li>
                 <li><a href="be_the_tutor.html">Want to be a Tutor?</a></li>
                 <li><a href="register.html">Sign Up</a></li>
                 <li><a href="login.html">Login</a></li>
+                <li id="logout-li" style="display:none;"><a href="#" id="logout-link">Logout</a></li>
             </ul>
+            <span id="user-info"></span>
         </div>
     </nav>
     <div class="container be-tutor-section">
-        <h1>Want to be a tutor?</h1>
+        <h1>Want to be a Tutor?</h1>
         <form class="form be-tutor-form" id="offer-form">
-            <input type="text" id="offer-name" placeholder="Your Name" required>
-            <input type="number" id="offer-ort" placeholder="ORT Points" required>
-            <input type="number" id="offer-ort-year" placeholder="Year you took the ORT test" min="2000" max="2099" required>
-            <input type="text" id="offer-experience" placeholder="Experience in Teaching" required>
-            <label>Subjects:</label>
-            <div class="subjects-select-group" id="subjects-select-group">
-                <label class="subject-checkbox-label">
-                    <input type="checkbox" class="subject-checkbox" value="Math"> Math
-                </label>
-                <label class="subject-checkbox-label">
-                    <input type="checkbox" class="subject-checkbox" value="Russian Language"> Russian Language
-                </label>
-                <label class="subject-checkbox-label">
-                    <input type="checkbox" class="subject-checkbox" value="Chemistry"> Chemistry
-                </label>
-                <label class="subject-checkbox-label">
-                    <input type="checkbox" class="subject-checkbox" value="Biology"> Biology
-                </label>
-                <label class="subject-checkbox-label">
-                    <input type="checkbox" class="subject-checkbox" value="Physics"> Physics
-                </label>
-                <label class="subject-checkbox-label">
-                    <input type="checkbox" class="subject-checkbox" value="History"> History
-                </label>
-                <label class="subject-checkbox-label">
-                    <input type="checkbox" class="subject-checkbox" value="English Language"> English Language
-                </label>
-                <label class="subject-checkbox-label">
-                    <input type="checkbox" class="subject-checkbox" value="Advanced Math"> Advanced Math
-                </label>
-                <label class="subject-checkbox-label">
-                    <input type="checkbox" class="subject-checkbox" value="Kyrgyz Language"> Kyrgyz Language
-                </label>
-            </div>
-            <label>Available Days:</label>
-            <div class="days-select-group" id="days-select-group">
-                <label class="day-checkbox-label">
-                    <input type="checkbox" class="day-checkbox" value="Monday"> Monday
-                </label>
-                <label class="day-checkbox-label">
-                    <input type="checkbox" class="day-checkbox" value="Tuesday"> Tuesday
-                </label>
-                <label class="day-checkbox-label">
-                    <input type="checkbox" class="day-checkbox" value="Wednesday"> Wednesday
-                </label>
-                <label class="day-checkbox-label">
-                    <input type="checkbox" class="day-checkbox" value="Thursday"> Thursday
-                </label>
-                <label class="day-checkbox-label">
-                    <input type="checkbox" class="day-checkbox" value="Friday"> Friday
-                </label>
-                <label class="day-checkbox-label">
-                    <input type="checkbox" class="day-checkbox" value="Saturday"> Saturday
-                </label>
-                <label class="day-checkbox-label">
-                    <input type="checkbox" class="day-checkbox" value="Sunday"> Sunday
-                </label>
-            </div>
-            <label>Price per hour:</label>
-            <div class="price-select-group" id="price-select-group">
-                <label class="price-radio-label">
-                    <input type="radio" class="price-radio" name="offer-price" value="$5/hour" required> $5/hour
-                </label>
-                <label class="price-radio-label">
-                    <input type="radio" class="price-radio" name="offer-price" value="$6/hour"> $6/hour
-                </label>
-                <label class="price-radio-label">
-                    <input type="radio" class="price-radio" name="offer-price" value="$7/hour"> $7/hour
-                </label>
-                <label class="price-radio-label">
-                    <input type="radio" class="price-radio" name="offer-price" value="$8/hour"> $8/hour
-                </label>
-                <label class="price-radio-label">
-                    <input type="radio" class="price-radio" name="offer-price" value="$9/hour"> $9/hour
-                </label>
-                <label class="price-radio-label">
-                    <input type="radio" class="price-radio" name="offer-price" value="$10/hour"> $10/hour
-                </label>
-            </div>
-            <label for="offer-start-time">Course Starting Time:</label>
-            <input type="time" id="offer-start-time" required>
-            <label for="offer-end-time">Course Ending Time:</label>
-            <input type="time" id="offer-end-time" required>
+            <input type="number" id="offer-ort" placeholder="ORT Points">
+            <input type="text" id="offer-experience" placeholder="Experience in Teaching">
+            <input type="text" id="offer-subjects" placeholder="Subjects (e.g. Math, Physics, English)">
+            <input type="text" id="offer-days" placeholder="Available Days (e.g. Monday, Wednesday)">
+            <input type="text" id="offer-price" placeholder="Price per hour (e.g. $5/hour)">
+            <input type="text" id="offer-start-time" placeholder="Course Starting Time (e.g. 10:00)">
+            <input type="text" id="offer-end-time" placeholder="Course Ending Time (e.g. 12:00)">
             <button type="submit">Offer Your Service</button>
         </form>
     </div>
+    <script src="../js/globals.js"></script>
     <script>
-        // Days selection visual
-        document.querySelectorAll('.day-checkbox').forEach(cb => {
-            cb.addEventListener('change', function() {
-                if (cb.checked) {
-                    cb.parentElement.classList.add('selected');
-                } else {
-                    cb.parentElement.classList.remove('selected');
-                }
-            });
-        });
-        // Price selection visual
-        document.querySelectorAll('.price-radio').forEach(rb => {
-            rb.addEventListener('change', function() {
-                document.querySelectorAll('.price-radio-label').forEach(label => label.classList.remove('selected'));
-                if (rb.checked) {
-                    rb.parentElement.classList.add('selected');
-                }
-            });
-        });
-        // Subjects selection visual
-        document.querySelectorAll('.subject-checkbox').forEach(cb => {
-            cb.addEventListener('change', function() {
-                if (cb.checked) {
-                    cb.parentElement.classList.add('selected');
-                } else {
-                    cb.parentElement.classList.remove('selected');
-                }
-            });
-        });
+        // Show username and balance in navbar if logged in
+        function updateNavbarUserInfo() {
+            const username = localStorage.getItem('username');
+            const balance = localStorage.getItem('balance');
+            const userInfo = document.getElementById('user-info');
+            const navbarLinks = document.getElementById('navbar-links');
+            const logoutLi = document.getElementById('logout-li');
+            if (username) {
+                userInfo.textContent = `User: ${username} | Balance: $${parseFloat(balance || 0).toFixed(2)}`;
+                userInfo.style.display = '';
+                navbarLinks.querySelectorAll('li').forEach(li => {
+                    const a = li.querySelector('a');
+                    if (a && (a.getAttribute('href') === 'login.html' || a.getAttribute('href') === 'register.html')) {
+                        li.style.display = 'none';
+                    }
+                });
+                logoutLi.style.display = '';
+            } else {
+                userInfo.textContent = '';
+                userInfo.style.display = 'none';
+                navbarLinks.querySelectorAll('li').forEach(li => li.style.display = '');
+                logoutLi.style.display = 'none';
+            }
+        }
+        updateNavbarUserInfo();
 
-        document.getElementById('offer-form').addEventListener('submit', function(e) {
+        // Logout functionality
+        document.getElementById('logout-link').onclick = function(e) {
             e.preventDefault();
-            const name = document.getElementById('offer-name').value;
+            localStorage.removeItem('username');
+            localStorage.removeItem('balance');
+            updateNavbarUserInfo();
+            window.location.href = "login.html";
+        };
+
+        document.getElementById('offer-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
             const ort = document.getElementById('offer-ort').value;
-            const ortYear = document.getElementById('offer-ort-year').value;
             const experience = document.getElementById('offer-experience').value;
-            // Get all selected subjects
-            const subjects = Array.from(document.querySelectorAll('.subject-checkbox:checked')).map(cb => cb.value);
-            const days = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value).join(', ');
-            const price = document.querySelector('.price-radio:checked') ? document.querySelector('.price-radio:checked').value : '';
+            const subjectsRaw = document.getElementById('offer-subjects').value;
+            const days = document.getElementById('offer-days').value;
+            const price = document.getElementById('offer-price').value;
             const startTime = document.getElementById('offer-start-time').value;
             const endTime = document.getElementById('offer-end-time').value;
 
+            // Split subjects by comma and trim
+            const subjects = subjectsRaw.split(',').map(s => s.trim()).filter(Boolean);
+
             if (!subjects.length) {
-                alert('Please select at least one subject.');
+                alert('Please enter at least one subject.');
                 return;
             }
             if (!days) {
-                alert('Please select at least one available day.');
+                alert('Please enter at least one available day.');
                 return;
             }
             if (!price) {
-                alert('Please select a price.');
+                alert('Please enter a price.');
                 return;
             }
 
-            let userOffers = JSON.parse(localStorage.getItem('userOffers') || '[]');
-            // Add an offer for each selected subject
-            subjects.forEach(subject => {
-                userOffers.push({name, ort, ortYear, experience, subject, price, days, startTime, endTime});
-            });
-            localStorage.setItem('userOffers', JSON.stringify(userOffers));
-            alert('Your offer(s) have been added! They will now appear on the main page.');
+            // Use username from globals.js
+            const username = window.currentUser && window.currentUser.username ? window.currentUser.username : "";
+
+            // Send each subject as a separate tutor offer
+            for (const subject of subjects) {
+                const data = {
+                    name: username,
+                    ort_points: Number(ort),
+                    experience: Number(experience),
+                    subject: subject,
+                    available_day: days,
+                    price: parseFloat(price),
+                    course_time_from: startTime,
+                    course_time_to: endTime
+                };
+                try {
+                    await fetch("https://yntymak.pythonanywhere.com/create-tutor", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify(data)
+                    });
+                } catch (err) {
+                    alert("Failed to send tutor offer for subject: " + subject);
+                }
+            }
+
+            alert('Your offer(s) have been sent!');
             document.getElementById('offer-form').reset();
-            // Remove selected style after reset
-            document.querySelectorAll('.day-checkbox-label').forEach(label => label.classList.remove('selected'));
-            document.querySelectorAll('.price-radio-label').forEach(label => label.classList.remove('selected'));
-            document.querySelectorAll('.subject-checkbox-label').forEach(label => label.classList.remove('selected'));
             window.location.href = "my_offers.html";
         });
     </script>

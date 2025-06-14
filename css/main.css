@@ -85,6 +85,7 @@ h1 {
 }
 .navbar {
     background: #007bff;
+    color: #fff;
     padding: 0.5rem 0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     margin-bottom: 2rem;
@@ -122,6 +123,16 @@ h1 {
 }
 .navbar-links a:hover {
     color: #e2e6ea;
+}
+#user-info {
+    margin-left: 20px;
+    font-weight: bold;
+    color: #fff;
+    background: #007bff;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 1rem;
+    display: inline-block;
 }
 .accept-btn-wrapper {
     display: none;
