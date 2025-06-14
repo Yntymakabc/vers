@@ -135,6 +135,35 @@
             });
         }
 
+        // Render tutors from API (dynamic, always clears and re-renders)
+        async function renderApiTutors() {
+            const servicesList = document.getElementById('services-list');
+            // Remove previously rendered API tutors
+            servicesList.querySelectorAll('[data-api="true"]').forEach(card => card.remove());
+            try {
+                const response = await fetch('https://yntymak.pythonanywhere.com/tutors');
+                const tutors = await response.json();
+                tutors.forEach(tutor => {
+                    const card = document.createElement('div');
+                    card.className = 'service-card';
+                    card.setAttribute('data-title', tutor.subject);
+                    card.setAttribute('data-name', tutor.name);
+                    card.setAttribute('data-api', 'true');
+                    card.innerHTML = `
+                        <h2>${tutor.subject}</h2>
+                        <p><strong>Name:</strong> ${tutor.name}</p>
+                        <p><strong>ORT Points:</strong> ${tutor.ort_points}</p>
+                        <p><strong>Experience:</strong> ${tutor.experience}</p>
+                        <p><strong>Price:</strong> $${tutor.price}/hour</p>
+                        <p><strong>Available Time:</strong> ${tutor.available_day} ${tutor.course_time_from}-${tutor.course_time_to}</p>
+                    `;
+                    servicesList.appendChild(card);
+                });
+            } catch (err) {
+                // Optionally show error
+            }
+        }
+
         // Search functionality
         document.getElementById('search-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -181,8 +210,12 @@
         }
 
         // Initial rendering
+        renderApiTutors();
         renderUserOffers();
         addAcceptListeners();
+
+        // Optionally, re-render API tutors on demand (e.g. after adding a new tutor)
+        // You can call renderApiTutors() again if needed.
 
         // If user adds an offer on be_the_tutor.html, save it to localStorage as 'userOffers'
         // Example code for be_the_tutor.html (for reference):

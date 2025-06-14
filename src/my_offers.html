@@ -72,6 +72,7 @@
     <h1>Subjects I Offer</h1>
     <div class="services-list" id="offers-list"></div>
     </div>
+    <script src="../js/globals.js"></script>
     <script>
         // Show username and balance in navbar if logged in
         function updateNavbarUserInfo() {
@@ -129,8 +130,11 @@
                     <p><strong>Price:</strong> ${offer.price}</p>
                     <p><strong>Available Time:</strong> ${offer.days} ${offer.startTime}-${offer.endTime}</p>
                 `;
-                // Remove offer on click (either on card or cancel-offer text)
+                // Print card info on click (except cancel)
                 card.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('cancel-offer')) {
+                        console.log(offer);
+                    }
                     if (e.target.classList.contains('cancel-offer') || e.currentTarget === e.target) {
                         userOffers = userOffers.filter(o =>
                             !(o.subject === offer.subject && o.username === offer.username)
@@ -150,6 +154,41 @@
             });
         }
 
+        // Render API tutors for this user
+        async function renderApiMyOffers() {
+            const offersList = document.getElementById('offers-list');
+            offersList.querySelectorAll('[data-api="true"]').forEach(card => card.remove());
+            const username = window.currentUser && window.currentUser.username ? window.currentUser.username : "";
+            if (!username) return;
+            try {
+                const response = await fetch('https://yntymak.pythonanywhere.com/tutors');
+                const tutors = await response.json();
+                tutors.forEach(tutor => {
+                    if (tutor.name === username) {
+                        const card = document.createElement('div');
+                        card.className = 'service-card';
+                        card.setAttribute('data-title', tutor.subject);
+                        card.setAttribute('data-api', 'true');
+                        card.innerHTML = `
+                            <h2>${tutor.subject}</h2>
+                            <p><strong>Name:</strong> ${tutor.name}</p>
+                            <p><strong>ORT Points:</strong> ${tutor.ort_points}</p>
+                            <p><strong>Experience:</strong> ${tutor.experience}</p>
+                            <p><strong>Price:</strong> $${tutor.price}/hour</p>
+                            <p><strong>Available Time:</strong> ${tutor.available_day} ${tutor.course_time_from}-${tutor.course_time_to}</p>
+                        `;
+                        // Print card info on click
+                        card.addEventListener('click', function() {
+                            console.log(tutor);
+                        });
+                        offersList.appendChild(card);
+                    }
+                });
+            } catch (err) {
+                // Optionally show error
+            }
+        }
+
         // Listen for removeOffer messages in main.html
         window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'removeOffer') {
@@ -165,7 +204,9 @@
             }
         });
 
+        // Call both renderers
         renderOffers();
+        renderApiMyOffers();
     </script>
 </body>
 </html>
