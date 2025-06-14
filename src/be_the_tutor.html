@@ -61,13 +61,15 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="main.html" class="navbar-logo">ORT-tutoring</a>
-            <ul class="navbar-links">
+            <ul class="navbar-links" id="navbar-links">
                 <li><a href="taken_courses.html">Taken Courses</a></li>
                 <li><a href="my_offers.html">My Offers</a></li>
                 <li><a href="be_the_tutor.html">Want to be a Tutor?</a></li>
                 <li><a href="register.html">Sign Up</a></li>
                 <li><a href="login.html">Login</a></li>
+                <li id="logout-li" style="display:none;"><a href="#" id="logout-link">Logout</a></li>
             </ul>
+            <span id="user-info"></span>
         </div>
     </nav>
     <div class="container be-tutor-section">
@@ -160,6 +162,41 @@
         </form>
     </div>
     <script>
+        // Show username and balance in navbar if logged in
+        function updateNavbarUserInfo() {
+            const username = localStorage.getItem('username');
+            const balance = localStorage.getItem('balance');
+            const userInfo = document.getElementById('user-info');
+            const navbarLinks = document.getElementById('navbar-links');
+            const logoutLi = document.getElementById('logout-li');
+            if (username) {
+                userInfo.textContent = `User: ${username} | Balance: $${parseFloat(balance || 0).toFixed(2)}`;
+                userInfo.style.display = '';
+                navbarLinks.querySelectorAll('li').forEach(li => {
+                    const a = li.querySelector('a');
+                    if (a && (a.getAttribute('href') === 'login.html' || a.getAttribute('href') === 'register.html')) {
+                        li.style.display = 'none';
+                    }
+                });
+                logoutLi.style.display = '';
+            } else {
+                userInfo.textContent = '';
+                userInfo.style.display = 'none';
+                navbarLinks.querySelectorAll('li').forEach(li => li.style.display = '');
+                logoutLi.style.display = 'none';
+            }
+        }
+        updateNavbarUserInfo();
+
+        // Logout functionality
+        document.getElementById('logout-link').onclick = function(e) {
+            e.preventDefault();
+            localStorage.removeItem('username');
+            localStorage.removeItem('balance');
+            updateNavbarUserInfo();
+            window.location.href = "login.html";
+        };
+
         // Days selection visual
         document.querySelectorAll('.day-checkbox').forEach(cb => {
             cb.addEventListener('change', function() {
