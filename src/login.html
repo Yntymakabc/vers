@@ -30,6 +30,7 @@
             if (data.message === "Login successful") {
                 localStorage.setItem('username', data.username);
                 localStorage.setItem('balance', data.balance);
+                localStorage.setItem('id', data.id); // Store id for globals.js
                 window.location.href = "main.html";
             } else {
                 alert(data.message || "Login failed");
