@@ -299,13 +299,13 @@
                 const data = {
                     name: username,
                     ort_points: Number(ort),
-                    experience: Number(experience),
+                    experience: experience, // <-- keep as text
                     subject: subject,
                     available_day: days,
                     price: parseFloat(price),
                     course_time_from: startTime,
                     course_time_to: endTime,
-                    link: zoomLink // Add the zoom link field
+                    link: zoomLink
                 };
                 try {
                     await fetch("https://yntymak.pythonanywhere.com/create-tutor", {
