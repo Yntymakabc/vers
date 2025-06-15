@@ -340,6 +340,12 @@
                         card.className = 'service-card';
                         card.setAttribute('data-title', tutor.subject);
                         card.setAttribute('data-api', 'true');
+                        
+                        // Include the Zoom link in the tutor's own view of their offerings
+                        const zoomLinkHtml = tutor.link ? 
+                            `<p><strong>Zoom Link:</strong> <a href="${tutor.link}" target="_blank" rel="noopener noreferrer">${tutor.link}</a></p>` : 
+                            '<p><strong>Zoom Link:</strong> Not provided</p>';
+                        
                         card.innerHTML = `
                             <h2>${tutor.subject}</h2>
                             <p><strong>Name:</strong> ${tutor.name}</p>
@@ -347,6 +353,7 @@
                             <p><strong>Experience:</strong> ${tutor.experience}</p>
                             <p><strong>Price:</strong> $${tutor.price}/hour</p>
                             <p><strong>Available Time:</strong> ${tutor.available_day} ${tutor.course_time_from}-${tutor.course_time_to}</p>
+                            ${zoomLinkHtml}
                         `;
                         // Print card info on click
                         card.addEventListener('click', function() {

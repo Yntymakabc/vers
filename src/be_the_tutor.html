@@ -120,6 +120,7 @@
             <input type="text" id="offer-price" placeholder="Price per hour (e.g. $5/hour)">
             <input type="text" id="offer-start-time" placeholder="Course Starting Time (e.g. 10:00)">
             <input type="text" id="offer-end-time" placeholder="Course Ending Time (e.g. 12:00)">
+            <input type="url" id="offer-zoom-link" placeholder="Zoom Meeting Link (e.g. https://zoom.us/j/123456789)">
             <button type="submit">Offer Your Service</button>
         </form>
     </div>
@@ -258,6 +259,7 @@
             const price = document.getElementById('offer-price').value;
             const startTime = document.getElementById('offer-start-time').value;
             const endTime = document.getElementById('offer-end-time').value;
+            const zoomLink = document.getElementById('offer-zoom-link').value;
 
             // Split subjects by comma and trim
             const subjects = subjectsRaw.split(',').map(s => s.trim()).filter(Boolean);
@@ -288,7 +290,8 @@
                     available_day: days,
                     price: parseFloat(price),
                     course_time_from: startTime,
-                    course_time_to: endTime
+                    course_time_to: endTime,
+                    link: zoomLink // Add the zoom link field
                 };
                 try {
                     await fetch("https://yntymak.pythonanywhere.com/create-tutor", {

@@ -185,8 +185,13 @@
                     
                     const tutorData = await response.json();
                     
-                    // Create card if data is valid - removed cancel button
+                    // Create card if data is valid - Now including the Zoom link for purchased courses
                     if (tutorData && tutorData.id) {
+                        // Add Zoom link if available
+                        const zoomLinkHtml = tutorData.link ? 
+                            `<p><strong>Zoom Link:</strong> <a href="${tutorData.link}" target="_blank" rel="noopener noreferrer">${tutorData.link}</a></p>` : 
+                            '<p><strong>Zoom Link:</strong> Not provided by tutor</p>';
+                        
                         cardsHTML += `
                             <div class="course-card" data-id="${tutorData.id}">
                                 <h2>${tutorData.subject || 'Subject'}</h2>
@@ -195,6 +200,7 @@
                                 <p><strong>Experience:</strong> ${tutorData.experience || 'N/A'}</p>
                                 <p><strong>Price:</strong> $${tutorData.price || 0}/hour</p>
                                 <p><strong>Available Time:</strong> ${tutorData.available_day || 'N/A'} ${tutorData.course_time_from || ''}-${tutorData.course_time_to || ''}</p>
+                                ${zoomLinkHtml}
                             </div>
                         `;
                     }
@@ -209,8 +215,6 @@
             }
             
             cardsContainer.innerHTML = cardsHTML;
-            
-            // Removed event listeners for cancel buttons
         }
 
         // Show username and balance in navbar if logged in (copied from main.html)
