@@ -113,14 +113,52 @@
             <ul class="navbar-links" id="navbar-links">
                 <li><a href="taken_courses.html">Taken Courses</a></li>
                 <li><a href="my_offers.html">My Offers</a></li>
-                <li><a href="be_the_tutor.html">Want to be a Tutor?</a></li>
+                <li><a href="be_the_tutor.html">Be the Tutor</a></li>
                 <li><a href="register.html">Sign Up</a></li>
                 <li><a href="login.html">Login</a></li>
                 <li id="logout-li" style="display:none;"><a href="#" id="logout-link">Logout</a></li>
             </ul>
-            <span id="user-info"></span>
+            <span id="user-info" style="cursor:pointer;"></span>
         </div>
     </nav>
+    <!-- Top Up Modal (copied from main.html) -->
+    <div id="balance-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:1000;align-items:center;justify-content:center;">
+        <div style="background:#fff;max-width:380px;width:90vw;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:1.5rem;position:relative;">
+            <button id="close-balance-modal" style="position:absolute;top:15px;right:18px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#888;">&times;</button>
+            <div style="text-align:center;font-size:1.8rem;font-weight:bold;margin-bottom:1.5rem;color:#007bff;">Top Up Balance</div>
+            <form id="balance-topup-form" autocomplete="off">
+                <div style="margin-bottom:1.2rem;">
+                    <label for="topup-sum" style="font-weight:500;font-size:1.1rem;display:block;margin-bottom:0.5rem;color:#333;">Amount (KGS):</label>
+                    <div style="position:relative;">
+                        <input type="number" id="topup-sum" min="1" step="1" placeholder="Enter amount" required style="width:100%;box-sizing:border-box;padding:0.8rem 1rem;border:1px solid #ccc;border-radius:12px;font-size:1rem;">
+                    </div>
+                </div>
+                <div style="background:#f8fafc;border-radius:15px;padding:1rem;margin-bottom:1.2rem;border:1px solid #eee;">
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:1.1rem;display:block;margin-bottom:0.5rem;color:#333;">Card Number:</label>
+                        <div style="position:relative;">
+                            <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" style="width:100%;box-sizing:border-box;padding:0.8rem 1rem;border:1px solid #ccc;border-radius:12px;font-size:1rem;">
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:0.8rem;margin-bottom:0;">
+                        <div style="flex:1;">
+                            <label style="font-weight:500;font-size:1.1rem;display:block;margin-bottom:0.5rem;color:#333;">Expiry:</label>
+                            <input type="text" placeholder="MM/YY" style="width:100%;box-sizing:border-box;padding:0.8rem 1rem;border:1px solid #ccc;border-radius:12px;font-size:1rem;">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-weight:500;font-size:1.1rem;display:block;margin-bottom:0.5rem;color:#333;">CVV:</label>
+                            <input type="text" placeholder="123" style="width:100%;box-sizing:border-box;padding:0.8rem 1rem;border:1px solid #ccc;border-radius:12px;font-size:1rem;">
+                        </div>
+                    </div>
+                    <div style="text-align:right;margin-top:0.8rem;">
+                        <span style="color:#6b7280;font-size:0.9rem;">Secured payment</span>
+                    </div>
+                </div>
+                <button type="submit" style="width:100%;padding:0.9rem;background:#007bff;color:#fff;border:none;border-radius:12px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.2s ease;">Pay Now</button>
+                <div id="balance-modal-message" style="min-height:1.5em;text-align:center;font-size:1rem;margin-top:0.8rem;"></div>
+            </form>
+        </div>
+    </div>
     <div class="container">
     <a href="be_the_tutor.html" class="be-tutor-link">Add a new offer</a>
     <h1>Subjects I Offer</h1>
@@ -131,12 +169,22 @@
         // Show username and balance in navbar if logged in
         function updateNavbarUserInfo() {
             const username = localStorage.getItem('username');
-            const balance = localStorage.getItem('balance');
+            let balance = (window.currentUser && typeof window.currentUser.balance !== "undefined")
+                ? window.currentUser.balance
+                : localStorage.getItem('balance');
+            if (balance === null || isNaN(balance)) balance = 0;
+            function formatBalance(val) {
+                let num = Number(val);
+                if (!isFinite(num)) return "0.00";
+                return num.toFixed(2);
+            }
             const userInfo = document.getElementById('user-info');
             const navbarLinks = document.getElementById('navbar-links');
             const logoutLi = document.getElementById('logout-li');
             if (username) {
-                userInfo.textContent = `User: ${username} | Balance: $${parseFloat(balance || 0).toFixed(2)}`;
+                userInfo.innerHTML = `<button id="balance-btn" style="background:#007bff;color:#fff;border:none;border-radius:16px;padding:4px 12px;font-weight:bold;cursor:pointer;">
+                    User: ${username} | Balance: $${formatBalance(balance)}
+                </button>`;
                 userInfo.style.display = '';
                 navbarLinks.querySelectorAll('li').forEach(li => {
                     const a = li.querySelector('a');
@@ -154,11 +202,74 @@
         }
         updateNavbarUserInfo();
 
-        // Logout functionality
+        // Top up modal logic (copied from main.html)
+        function showBalanceModal() {
+            document.getElementById('balance-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            document.getElementById('balance-modal-message').textContent = '';
+            document.getElementById('balance-topup-form').reset();
+        }
+        function hideBalanceModal() {
+            document.getElementById('balance-modal').style.display = 'none';
+            document.body.style.overflow = '';
+            document.getElementById('balance-modal-message').textContent = '';
+            document.getElementById('balance-topup-form').reset();
+        }
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'balance-btn') showBalanceModal();
+            if (e.target && e.target.id === 'close-balance-modal') hideBalanceModal();
+            if (e.target && e.target.id === 'balance-modal') hideBalanceModal();
+        });
+        document.getElementById('balance-topup-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const sum = parseFloat(document.getElementById('topup-sum').value);
+            const messageArea = document.getElementById('balance-modal-message');
+            messageArea.textContent = '';
+            messageArea.style.color = '#e74c3c';
+            if (isNaN(sum) || sum <= 0) {
+                messageArea.textContent = "Please enter a valid positive amount.";
+                return;
+            }
+            const userId = window.currentUser && window.currentUser.id ? window.currentUser.id : null;
+            if (!userId) {
+                messageArea.textContent = "User ID not found. Please log in again.";
+                return;
+            }
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Processing...";
+            submitBtn.style.opacity = "0.7";
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1200));
+                await fetch("https://yntymak.pythonanywhere.com/add-balance", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ id: Number(userId), sum: sum })
+                });
+                let balance = parseFloat(localStorage.getItem('balance') || "0");
+                balance += sum;
+                localStorage.setItem('balance', balance);
+                if (window.currentUser) window.currentUser.balance = balance;
+                messageArea.textContent = "Payment successful!";
+                messageArea.style.color = "#27ae60";
+                updateNavbarUserInfo();
+                setTimeout(hideBalanceModal, 1500);
+            } catch (err) {
+                messageArea.textContent = "Payment failed. Please try again.";
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+                submitBtn.style.opacity = "1";
+            }
+        });
+
         document.getElementById('logout-link').onclick = function(e) {
             e.preventDefault();
             localStorage.removeItem('username');
             localStorage.removeItem('balance');
+            localStorage.removeItem('courses');
+            localStorage.removeItem('id');
             updateNavbarUserInfo();
             window.location.href = "login.html";
         };
