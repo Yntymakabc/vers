@@ -159,7 +159,25 @@
                 logoutLi.style.display = 'none';
             }
         }
+
+        function setupLogout() {
+            const logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('balance');
+                    localStorage.removeItem('courses');
+                    localStorage.removeItem('id');
+                    if (window.updateCurrentUser) window.updateCurrentUser();
+                    updateNavbarUserInfo();
+                    window.location.href = "login.html";
+                };
+            }
+        }
+
         updateNavbarUserInfo();
+        setupLogout();
 
         // Top up modal logic (copied from main.html)
         function showBalanceModal() {
@@ -223,15 +241,13 @@
             }
         });
 
-        document.getElementById('logout-link').onclick = function(e) {
-            e.preventDefault();
-            localStorage.removeItem('username');
-            localStorage.removeItem('balance');
-            localStorage.removeItem('courses');
-            localStorage.removeItem('id');
+        document.addEventListener('DOMContentLoaded', () => {
             updateNavbarUserInfo();
-            window.location.href = "login.html";
-        };
+            setupLogout();
+        });
+
+        // Also call setupLogout immediately in case DOM is already loaded
+        setupLogout();
 
         document.getElementById('offer-form').addEventListener('submit', async function(e) {
             e.preventDefault();

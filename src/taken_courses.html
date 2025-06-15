@@ -311,12 +311,32 @@
                 submitBtn.style.opacity = "1";
             }
         });
+        // Ensure logout works even if DOM is not ready yet
+        function setupLogout() {
+            const logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('balance');
+                    localStorage.removeItem('courses');
+                    localStorage.removeItem('id');
+                    if (window.updateCurrentUser) window.updateCurrentUser();
+                    updateNavbarUserInfo();
+                    window.location.href = "login.html";
+                };
+            }
+        }
+
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             window.updateCurrentUser && window.updateCurrentUser();
             updateNavbarUserInfo();
             displayTutorCards && displayTutorCards();
+            setupLogout();
         });
+        // Also call setupLogout immediately in case DOM is already loaded
+        setupLogout();
     </script>
 </body>
 </html>
