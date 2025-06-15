@@ -31,3 +31,29 @@ function handleLoginResponse(response) {
     
     return data.message; // "Login successful"
 }
+
+// New function to fetch balance from API
+window.fetchUserBalance = async function(userId) {
+    try {
+        if (!userId) return null;
+        
+        const response = await fetch(`https://yntymak.pythonanywhere.com/balance?user_id=${userId}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Fetched balance from API:", data);
+        
+        // Update localStorage and currentUser object
+        if (data.balance !== undefined) {
+            localStorage.setItem('balance', data.balance);
+            window.currentUser.balance = parseFloat(data.balance);
+        }
+        
+        return parseFloat(data.balance);
+    } catch (error) {
+        console.error("Error fetching balance:", error);
+        return window.currentUser.balance; // Fall back to stored value
+    }
+};

@@ -131,21 +131,27 @@
     <script src="../js/globals.js"></script>
     <script>
         // Show username and balance in navbar if logged in
-        function updateNavbarUserInfo() {
-            // Use balance from globals.js if available
+        async function updateNavbarUserInfo() {
+            // Use balance from API if user is logged in
             const username = localStorage.getItem('username');
-            let balance = (window.currentUser && typeof window.currentUser.balance !== "undefined")
-                ? window.currentUser.balance
-                : localStorage.getItem('balance');
-            if (balance === null || isNaN(balance)) balance = 0;
+            const userId = window.currentUser && window.currentUser.id ? window.currentUser.id : null;
+            
+            let balance = 0;
+            if (userId) {
+                // Fetch balance from API
+                balance = await window.fetchUserBalance(userId) || 0;
+            }
+            
             function formatBalance(val) {
                 let num = Number(val);
                 if (!isFinite(num)) return "0.00";
                 return num.toFixed(2);
             }
+            
             const userInfo = document.getElementById('user-info');
             const navbarLinks = document.getElementById('navbar-links');
             const logoutLi = document.getElementById('logout-li');
+            
             if (username) {
                 userInfo.innerHTML = `<button id="balance-btn" style="background:#007bff;color:#fff;border:none;border-radius:16px;padding:4px 12px;font-weight:bold;cursor:pointer;">
                     User: ${username} | Balance: $${formatBalance(balance)}
@@ -165,6 +171,8 @@
                 logoutLi.style.display = 'none';
             }
         }
+        
+        // Initial update
         updateNavbarUserInfo();
 
         // Make balance button redirect to payment page
@@ -257,12 +265,9 @@
                         localStorage.setItem('courses', JSON.stringify(window.currentUser.courses));
                     }
                     
-                    // Update user balance if returned in response
-                    if (data.balance !== undefined) {
-                        window.currentUser.balance = data.balance;
-                        localStorage.setItem('balance', data.balance);
-                        updateNavbarUserInfo();
-                    }
+                    // Refresh balance from API after purchase
+                    await window.fetchUserBalance(userId);
+                    await updateNavbarUserInfo();
                 } else {
                     alert(data.message || "Failed to purchase course. Please try again.");
                 }
@@ -422,7 +427,7 @@
             document.getElementById('balance-topup-form').reset();
         }
 
-        // Top up form logic - keeping the same functionality, just updating the visual processing state
+        // Top up form logic with API balance update
         document.getElementById('balance-topup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const sum = parseFloat(document.getElementById('topup-sum').value);
@@ -450,24 +455,19 @@
             submitBtn.style.opacity = "0.7";
 
             try {
-                // Simulate processing delay
-                await new Promise(resolve => setTimeout(resolve, 1200));
-                
-                // Original API call - unchanged
+                // Original API call
                 await fetch("https://yntymak.pythonanywhere.com/add-balance", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ id: Number(userId), sum: sum })
                 });
                 
-                // Update local balance for UI
-                let balance = parseFloat(localStorage.getItem('balance') || "0");
-                balance += sum;
-                localStorage.setItem('balance', balance);
-                if (window.currentUser) window.currentUser.balance = balance;
+                // Fetch updated balance from API
+                await window.fetchUserBalance(userId);
+                await updateNavbarUserInfo();
+                
                 messageArea.textContent = "Payment successful!";
                 messageArea.style.color = "#27ae60";
-                updateNavbarUserInfo();
                 setTimeout(hideBalanceModal, 1500);
             } catch (err) {
                 messageArea.textContent = "Payment failed. Please try again.";
